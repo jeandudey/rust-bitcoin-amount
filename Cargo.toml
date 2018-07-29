@@ -1,0 +1,9 @@
+[package]
+name = "bitcoin-amount"
+version = "0.1.0"
+authors = ["Jean Pierre Dudey <jeandudey@hotmail.com>"]
+
+[features]
+serde_json = []
+
+[dependencies]
