@@ -3,6 +3,8 @@
 //! # Bitcoin Amount
 //!
 
+#[cfg(feature = "serde_impl")]
+extern crate serde;
 #[cfg(feature = "serde_json_number")]
 extern crate serde_json;
 
@@ -91,6 +93,26 @@ impl Sub for Amount {
     
     fn sub(self, rhs: Amount) -> Self::Output {
         Amount::from_sat(self.0 - rhs.0)
+    }
+}
+
+#[cfg(feature = "serde_impl")]
+impl<'de> serde::Deserialize<'de> for Amount {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::de::Deserializer<'de>
+    {
+        i64::deserialize(deserializer).map(Amount)
+    }
+}
+
+#[cfg(feature = "serde_impl")]
+impl serde::Serialize for Amount {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::ser::Serializer
+    {
+        i64::serialize(&self.0, serializer)
     }
 }
 
