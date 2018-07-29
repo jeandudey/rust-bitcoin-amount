@@ -57,6 +57,16 @@ impl Amount {
         Amount::from_str(&*num).unwrap()
     }
 
+    /// Returns the additive identity of `Amount`.
+    pub fn zero() -> Amount {
+        Amount(0)
+    }
+
+    /// Returns the multiplicative identity of `Amount`.
+    pub fn one() -> Amount {
+        Amount(1)
+    }
+
     /// Maximum value that can fit in an `Amount`.
     pub fn max_value() -> Amount { MAX }
 
