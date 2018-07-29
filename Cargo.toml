@@ -2,6 +2,17 @@
 name = "bitcoin-amount"
 version = "0.1.0"
 authors = ["Jean Pierre Dudey <jeandudey@hotmail.com>"]
+description = "Safe manipulation of bitcoin amounts"
+documentation = "https://docs.rs/bitcoin-amount"
+homepage = "https://github.com/jeandudey/rust-bitcoin-amount"
+repository = "https://github.com/jeandudey/rust-bitcoin-amount"
+readme = "README.md"
+keywords = ["bitcoin", "cryptocurrency"]
+categories = ["encoding"]
+license = "MIT/Apache-2.0"
+
+[badges]
+travis-ci = { repository = "jeandudey/rust-bitcoin-amount", branch = "master" }
 
 [features]
 serde_impl = ["serde"]
