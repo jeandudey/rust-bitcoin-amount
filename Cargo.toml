@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Jean Pierre Dudey <jeandudey@hotmail.com>"]
 
 [features]
-serde_json = []
+serde_json_number = ["serde_json"]
 
-[dependencies]
+[dependencies.serde_json]
+features = ["arbitrary_precision"]
+optional = true
+version = "1"

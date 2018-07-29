@@ -3,6 +3,9 @@
 //! # Bitcoin Amount
 //!
 
+#[cfg(feature = "serde_json_number")]
+extern crate serde_json;
+
 use std::error;
 use std::fmt::{self, Display, Formatter};
 
@@ -42,6 +45,14 @@ impl Amount {
     /// Creates a new `Amount` from a satoshi amount.
     pub fn from_sat(sat: i64) -> Amount {
         Amount(sat)
+    }
+
+    /// Creates an `Amount` from a JSON number, the JSON number unit
+    /// SHOULD be in BTC not satoshis.
+    #[cfg(feature = "serde_json_number")]
+    pub fn from_json_number(num: &serde_json::value::Number) -> Amount {
+        let num = format!("{}", num);
+        Amount::from_str(&*num).unwrap()
     }
 
     /// Maximum value that can fit in an `Amount`.
