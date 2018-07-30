@@ -5,8 +5,10 @@
 
 #[cfg(feature = "serde")]
 extern crate serde;
-#[cfg(feature = "serde_json_number")]
+#[cfg(feature = "serde_json")]
 extern crate serde_json;
+#[cfg(feature = "strason")]
+extern crate strason;
 
 use std::error;
 use std::fmt::{self, Display, Formatter};
@@ -22,7 +24,7 @@ type Inner = i64;
 /// The amount of satoshis in a BTC.
 pub const SAT_PER_BTC: i64 = 100_000_000;
 
-/// The amount of satoshis in a BTC.
+/// The amount of satoshis in a BTC (floating point).
 pub const SAT_PER_BTC_FP: f64 = 100_000_000.0;
 
 /// Maximum value in an `Amount`.
@@ -35,16 +37,12 @@ pub const MIN: Amount = Amount(Inner::min_value());
 pub struct Amount(Inner);
 
 impl Amount {
-    /// Creates a new `Amount` from a satoshi amount.
-    ///
-    /// # Panics
-    ///
-    /// The satoshi amount can't be larger than [max_value][1].
-    ///
-    /// [1]: #method.max_value
-    pub fn from_btc(btc: f64) -> Amount {
-        let sat = round_and_to_sat(btc);
-        Amount::from_sat(sat)
+    /// Creates an `Amount` from the given type.
+    pub fn from_btc<T>(btc: T) -> Amount
+    where T:
+          IntoBtc,
+    {
+        btc.into_btc()
     }
 
     /// Creates a new `Amount` from a satoshi amount.
@@ -52,10 +50,18 @@ impl Amount {
         Amount(sat)
     }
 
-    /// Creates an `Amount` from a JSON number, the JSON number unit
+    /// Creates an `Amount` from a `serde_json` number, the JSON number unit
     /// SHOULD be in BTC not satoshis.
-    #[cfg(feature = "serde_json_number")]
-    pub fn from_json_number(num: &serde_json::value::Number) -> Amount {
+    #[cfg(feature = "serde_json")]
+    pub fn from_serde_json(num: &serde_json::value::Number) -> Amount {
+        let num = format!("{}", num);
+        Amount::from_str(&*num).unwrap()
+    }
+
+    /// Creates an `Amount` from a `serde_json` number, the JSON number unit
+    /// SHOULD be in BTC not satoshis.
+    #[cfg(feature = "strason")]
+    pub fn from_strason_json(num: &serde_json::value::Number) -> Amount {
         let num = format!("{}", num);
         Amount::from_str(&*num).unwrap()
     }
@@ -169,6 +175,60 @@ fn round_and_to_sat(v: f64) -> Inner {
         ((v * SAT_PER_BTC_FP) - 0.5) as Inner
     } else {
         ((v * SAT_PER_BTC_FP) + 0.5) as Inner
+    }
+}
+
+/// Trait to mark types as convertable into `Amount`s.
+///
+/// Types that implement this trait should perform the conversion from BTC
+/// amounts to satoshis e.g. an f64 performs the conversion of "0.00000025" to
+/// 25 satoshis. See `Amount::from_sat`.
+pub trait IntoBtc {
+    /// Performs the conversion.
+    fn into_btc(self) -> Amount;
+}
+
+impl<'a> IntoBtc for &'a f64 {
+    fn into_btc(self) -> Amount {
+        let sat = round_and_to_sat(*self);
+        Amount::from_sat(sat)
+    }
+}
+
+impl IntoBtc for f64 {
+    fn into_btc(self) -> Amount {
+        let sat = round_and_to_sat(self);
+        Amount::from_sat(sat)
+    }
+}
+
+#[cfg(feature = "serde_json")]
+impl<'a> IntoBtc for &'a serde_json::value::Number {
+    fn into_btc(self) -> Amount {
+        let num = format!("{}", self);
+        Amount::from_str(&*num).unwrap()
+    }
+}
+
+#[cfg(feature = "serde_json")]
+impl IntoBtc for serde_json::value::Number {
+    fn into_btc(self) -> Amount {
+        let num = format!("{}", self);
+        Amount::from_str(&*num).unwrap()
+    }
+}
+
+#[cfg(feature = "strason")]
+impl<'a> IntoBtc for &'a strason::Json {
+    fn into_btc(self) -> Amount {
+        Amount::from_str(self.num().unwrap()).unwrap()
+    }
+}
+
+#[cfg(feature = "strason")]
+impl IntoBtc for  strason::Json {
+    fn into_btc(self) -> Amount {
+        Amount::from_str(self.num().unwrap()).unwrap()
     }
 }
 
