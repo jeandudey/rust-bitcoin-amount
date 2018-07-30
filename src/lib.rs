@@ -50,22 +50,6 @@ impl Amount {
         Amount(sat)
     }
 
-    /// Creates an `Amount` from a `serde_json` number, the JSON number unit
-    /// SHOULD be in BTC not satoshis.
-    #[cfg(feature = "serde_json")]
-    pub fn from_serde_json(num: &serde_json::value::Number) -> Amount {
-        let num = format!("{}", num);
-        Amount::from_str(&*num).unwrap()
-    }
-
-    /// Creates an `Amount` from a `serde_json` number, the JSON number unit
-    /// SHOULD be in BTC not satoshis.
-    #[cfg(feature = "strason")]
-    pub fn from_strason_json(num: &serde_json::value::Number) -> Amount {
-        let num = format!("{}", num);
-        Amount::from_str(&*num).unwrap()
-    }
-
     /// Returns the additive identity of `Amount`.
     pub fn zero() -> Amount {
         Amount(0)
