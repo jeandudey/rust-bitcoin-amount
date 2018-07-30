@@ -16,6 +16,9 @@ use std::ops::{Add, Div, Mul, Sub};
 use std::num::ParseFloatError;
 use std::str::FromStr;
 
+/// The primitive type that holds the satoshis.
+type Inner = i64;
+
 /// The amount of satoshis in a BTC.
 pub const SAT_PER_BTC: i64 = 100_000_000;
 
@@ -23,13 +26,13 @@ pub const SAT_PER_BTC: i64 = 100_000_000;
 pub const SAT_PER_BTC_FP: f64 = 100_000_000.0;
 
 /// Maximum value in an `Amount`.
-pub const MAX: Amount = Amount(i64::max_value());
+pub const MAX: Amount = Amount(Inner::max_value());
 /// Minimum value in an `Amount`.
-pub const MIN: Amount = Amount(i64::min_value());
+pub const MIN: Amount = Amount(Inner::min_value());
 
 /// A bitcoin amount integer type.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-pub struct Amount(i64);
+pub struct Amount(Inner);
 
 impl Amount {
     /// Creates a new `Amount` from a satoshi amount.
@@ -45,7 +48,7 @@ impl Amount {
     }
 
     /// Creates a new `Amount` from a satoshi amount.
-    pub fn from_sat(sat: i64) -> Amount {
+    pub fn from_sat(sat: Inner) -> Amount {
         Amount(sat)
     }
 
@@ -72,6 +75,11 @@ impl Amount {
 
     /// Minimum value that can fit in an `Amount`.
     pub fn min_value() -> Amount { MIN }
+
+    /// Converts this `Amount` to the inner satoshis.
+    pub fn into_inner(self) -> Inner {
+        self.0
+    }
 }
 
 impl Add for Amount {
@@ -112,7 +120,7 @@ impl<'de> serde::Deserialize<'de> for Amount {
     where
         D: serde::de::Deserializer<'de>
     {
-        i64::deserialize(deserializer).map(Amount)
+        Inner::deserialize(deserializer).map(Amount)
     }
 }
 
@@ -122,7 +130,7 @@ impl serde::Serialize for Amount {
     where
         S: serde::ser::Serializer
     {
-        i64::serialize(&self.0, serializer)
+        Inner::serialize(&self.0, serializer)
     }
 }
 
@@ -156,11 +164,11 @@ impl error::Error for ParseAmountError {
     }
 }
 
-fn round_and_to_sat(v: f64) -> i64 {
+fn round_and_to_sat(v: f64) -> Inner {
     if v < 0.0 {
-        ((v * SAT_PER_BTC_FP) - 0.5) as i64
+        ((v * SAT_PER_BTC_FP) - 0.5) as Inner
     } else {
-        ((v * SAT_PER_BTC_FP) + 0.5) as i64
+        ((v * SAT_PER_BTC_FP) + 0.5) as Inner
     }
 }
 
