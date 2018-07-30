@@ -1,6 +1,6 @@
 [package]
 name = "bitcoin-amount"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Jean Pierre Dudey <jeandudey@hotmail.com>"]
 description = "Safe manipulation of bitcoin amounts"
 documentation = "https://docs.rs/bitcoin-amount"
