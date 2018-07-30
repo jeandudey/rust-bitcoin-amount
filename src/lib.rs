@@ -3,7 +3,7 @@
 //! # Bitcoin Amount
 //!
 
-#[cfg(feature = "serde_impl")]
+#[cfg(feature = "serde")]
 extern crate serde;
 #[cfg(feature = "serde_json_number")]
 extern crate serde_json;
@@ -114,7 +114,7 @@ impl Sub for Amount {
     }
 }
 
-#[cfg(feature = "serde_impl")]
+#[cfg(feature = "serde")]
 impl<'de> serde::Deserialize<'de> for Amount {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
@@ -124,7 +124,7 @@ impl<'de> serde::Deserialize<'de> for Amount {
     }
 }
 
-#[cfg(feature = "serde_impl")]
+#[cfg(feature = "serde")]
 impl serde::Serialize for Amount {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where

@@ -1,6 +1,6 @@
 [package]
 name = "bitcoin-amount"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Jean Pierre Dudey <jeandudey@hotmail.com>"]
 description = "Safe manipulation of bitcoin amounts"
 documentation = "https://docs.rs/bitcoin-amount"
@@ -15,7 +15,6 @@ license = "MIT/Apache-2.0"
 travis-ci = { repository = "jeandudey/rust-bitcoin-amount", branch = "master" }
 
 [features]
-serde_impl = ["serde"]
 serde_json_number = ["serde_json"]
 
 [dependencies.serde]
